@@ -40,7 +40,7 @@ export async function getStaticProps({ locale }: GetStaticPropsContext) {
   const comment: IComment = {
     author: {
       avatarUrl: 'https://avatars.githubusercontent.com/in/106117',
-      login: 'giscus',
+      login: 'KB',
       url: 'https://github.com/apps/giscus',
     },
     authorAssociation: 'APP',
