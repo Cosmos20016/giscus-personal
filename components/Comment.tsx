@@ -16,7 +16,6 @@ interface ICommentProps {
   replyBox?: ReactElement<typeof CommentBox>;
   onCommentUpdate?: (newComment: IComment, promise: Promise<unknown>) => void;
   onReplyUpdate?: (newReply: IReply, promise: Promise<unknown>) => void;
-  discussionNumber: number; // ¡Agregado!
 }
 
 export default function Comment({
@@ -25,7 +24,6 @@ export default function Comment({
   replyBox,
   onCommentUpdate,
   onReplyUpdate,
-  discussionNumber, // ¡Nuevo!
 }: ICommentProps) {
   const { t, dir } = useGiscusTranslation();
   const formatDate = useDateFormatter();
@@ -34,6 +32,7 @@ export default function Comment({
 
   const replies = comment.replies.slice(-5 - backPage * 50);
   const remainingReplies = comment.replyCount - replies.length;
+
   const hasNextPage = replies.length < comment.replies.length;
   const hasUnfetchedReplies = !hasNextPage && remainingReplies > 0;
 
@@ -51,11 +50,13 @@ export default function Comment({
     const upvoteCount = comment.viewerHasUpvoted
       ? comment.upvoteCount - 1
       : comment.upvoteCount + 1;
+
     const promise = toggleUpvote(
       { upvoteInput: { subjectId: comment.id } },
       token,
       comment.viewerHasUpvoted,
     );
+
     onCommentUpdate(
       {
         ...comment,
@@ -67,7 +68,6 @@ export default function Comment({
   }, [comment, onCommentUpdate, token]);
 
   const hidden = !!comment.deletedAt || comment.isMinimized;
-  const isAuthor = comment.viewerDidAuthor;
 
   return (
     <div className="gsc-comment">
@@ -108,19 +108,6 @@ export default function Comment({
                   </span>
                 </div>
               ) : null}
-              {/* Botón Editar solo para el autor */}
-              {isAuthor && (
-                <span className="ml-2">
-                  <a
-                    href={`https://github.com/Cosmos20016/Gesti-n-de-comentarios/discussions/${discussionNumber}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="color-text-link underline text-xs"
-                  >
-                    Editar
-                  </a>
-                </span>
-              )}
             </div>
             {comment.lastEditedAt ? (
               <button
@@ -132,6 +119,7 @@ export default function Comment({
             ) : null}
           </div>
         ) : null}
+        {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions, jsx-a11y/click-events-have-key-events */}
         <div
           dir={children ? dir : 'auto'}
           className={`markdown gsc-comment-content${
@@ -158,6 +146,8 @@ export default function Comment({
                   comment.viewerHasUpvoted ? 'has-reacted' : ''
                 }`}
                 onClick={upvote}
+                // TODO: Remove `true ||` when GitHub allows upvote with app-issued user tokens
+                // https://github.com/orgs/community/discussions/3968
                 disabled={true || !token || !comment.viewerCanUpvote}
                 aria-label={token ? t('upvote') : t('youMustBeSignedInToUpvote')}
                 title={
@@ -167,6 +157,7 @@ export default function Comment({
                 }
               >
                 <ArrowUpIcon className="gsc-direct-reaction-button-emoji" />
+
                 <span
                   className="gsc-social-reaction-summary-item-count"
                   title={t('upvotes', { count: comment.upvoteCount })}
@@ -201,11 +192,13 @@ export default function Comment({
                 <div className="flex w-[29px] shrink-0 content-center mr-[9px]">
                   <KebabHorizontalIcon className="w-full rotate-90 fill-[var(--color-border-muted)]" />
                 </div>
+
                 {hasNextPage ? (
                   <button className="color-text-link underline" onClick={incrementBackPage}>
                     {t('showPreviousReplies', { count: remainingReplies })}
                   </button>
                 ) : null}
+
                 {hasUnfetchedReplies ? (
                   <a
                     href={comment.url}
@@ -218,6 +211,7 @@ export default function Comment({
                 ) : null}
               </div>
             ) : null}
+
             {onReplyUpdate
               ? replies.map((reply) => (
                   <Reply key={reply.id} reply={reply} onReplyUpdate={onReplyUpdate} />
@@ -225,6 +219,7 @@ export default function Comment({
               : null}
           </div>
         ) : null}
+
         {!comment.isMinimized && !!replyBox ? replyBox : null}
       </div>
     </div>
