@@ -28,12 +28,7 @@ export default function Reply({ reply, onReplyUpdate }: IReplyProps) {
       <div className="gsc-tl-line" />
       <div className={`flex ${hidden ? 'items-center' : ''}`}>
         <div className="gsc-reply-author-avatar">
-          <a
-            rel="nofollow noopener noreferrer"
-            target="_blank"
-            href={reply.author.url}
-            className="flex items-center"
-          >
+          <span className="flex items-center">
             <img
               className="rounded-full"
               src={reply.author.avatarUrl}
@@ -42,22 +37,17 @@ export default function Reply({ reply, onReplyUpdate }: IReplyProps) {
               alt={`@${reply.author.login}`}
               loading="lazy"
             />
-          </a>
+          </span>
         </div>
         <div className="w-full min-w-0 ml-2">
           {!hidden ? (
             <div className="gsc-reply-header">
               <div className="gsc-reply-author">
-                <a
-                  rel="nofollow noopener noreferrer"
-                  target="_blank"
-                  href={reply.author.url}
-                  className="flex min-w-0 items-center"
-                >
+                <span className="flex min-w-0 items-center">
                   <span className="link-primary overflow-hidden text-ellipsis font-semibold">
                     {reply.author.login}
                   </span>
-                </a>
+                </span>
                 <span className="link-secondary overflow-hidden text-ellipsis no-underline">
                   <time
                     className="whitespace-nowrap"
