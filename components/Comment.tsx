@@ -69,7 +69,7 @@ export default function Comment({
 
   const hidden = !!comment.deletedAt || comment.isMinimized;
 
-  // Nuevo: Para saber si el usuario autenticado es el autor del comentario
+  // Mostrar solo si está autenticado y es el autor del comentario
   const isAuthor = user && user.login === comment.author.login;
 
   return (
@@ -104,8 +104,9 @@ export default function Comment({
                   {formatDateDistance(comment.createdAt)}
                 </time>
               </span>
+              {/* Botón de Editar solo para el autor */}
               {isAuthor && (
-                <span className="ml-2 flex gap-2">
+                <span className="ml-2">
                   <a
                     href={`https://github.com/Cosmos20016/Gesti-n-de-comentarios/discussions/1/comments/${comment.id}/edit`}
                     target="_blank"
@@ -113,14 +114,6 @@ export default function Comment({
                     className="color-text-link underline text-xs"
                   >
                     Editar
-                  </a>
-                  <a
-                    href={`https://github.com/Cosmos20016/Gesti-n-de-comentarios/discussions/1/comments/${comment.id}/edit`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="color-text-link underline text-xs"
-                  >
-                    Borrar
                   </a>
                 </span>
               )}
