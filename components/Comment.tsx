@@ -1,5 +1,5 @@
 import { ArrowUpIcon, KebabHorizontalIcon } from '@primer/octicons-react';
-import { ReactElement, ReactNode, useCallback, useContext, useState } from 'react';
+import { ReactElement, ReactNode, useCallback, useContext, useState, useEffect } from 'react';
 import { handleCommentClick, processCommentBody } from '../lib/adapter';
 import { IComment, IReply } from '../lib/types/adapter';
 import { Reaction, updateCommentReaction } from '../lib/reactions';
@@ -16,7 +16,6 @@ interface ICommentProps {
   replyBox?: ReactElement<typeof CommentBox>;
   onCommentUpdate?: (newComment: IComment, promise: Promise<unknown>) => void;
   onReplyUpdate?: (newReply: IReply, promise: Promise<unknown>) => void;
-  discussionNumber: number; // ← AGREGADO
 }
 
 export default function Comment({
@@ -25,12 +24,24 @@ export default function Comment({
   replyBox,
   onCommentUpdate,
   onReplyUpdate,
-  discussionNumber, // ← AGREGADO
 }: ICommentProps) {
   const { t, dir } = useGiscusTranslation();
   const formatDate = useDateFormatter();
   const formatDateDistance = useRelativeTimeFormatter();
   const [backPage, setBackPage] = useState(0);
+
+  // Estado para el número de discusión
+  const [discussionNumber, setDiscussionNumber] = useState<number>(1);
+
+  // Al montar el componente, obtenemos el número de la discusión desde la URL
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const match = window.location.pathname.match(/discussions\/(\d+)/);
+      if (match && match[1]) {
+        setDiscussionNumber(Number(match[1]));
+      }
+    }
+  }, []);
 
   const replies = comment.replies.slice(-5 - backPage * 50);
   const remainingReplies = comment.replyCount - replies.length;
@@ -104,6 +115,13 @@ export default function Comment({
                   {formatDateDistance(comment.createdAt)}
                 </time>
               </span>
+              {comment.authorAssociation !== 'NONE' ? (
+                <div className="hidden text-xs leading-[18px] sm:inline-flex">
+                  <span className="color-box-border-info font-medium capitalize ml-1 rounded-xl border px-[7px]">
+                    {t(comment.authorAssociation)}
+                  </span>
+                </div>
+              ) : null}
               {/* Botón Editar solo para el autor */}
               {isAuthor && (
                 <span className="ml-2">
@@ -117,13 +135,6 @@ export default function Comment({
                   </a>
                 </span>
               )}
-              {comment.authorAssociation !== 'NONE' ? (
-                <div className="hidden text-xs leading-[18px] sm:inline-flex">
-                  <span className="color-box-border-info font-medium capitalize ml-1 rounded-xl border px-[7px]">
-                    {t(comment.authorAssociation)}
-                  </span>
-                </div>
-              ) : null}
             </div>
             {comment.lastEditedAt ? (
               <button
