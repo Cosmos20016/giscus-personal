@@ -36,7 +36,7 @@ export default function Comment({
   const hasNextPage = replies.length < comment.replies.length;
   const hasUnfetchedReplies = !hasNextPage && remainingReplies > 0;
 
-  const { token, user } = useContext(AuthContext);
+  const { token } = useContext(AuthContext);
 
   const updateReactions = useCallback(
     (reaction: Reaction, promise: Promise<unknown>) =>
@@ -69,8 +69,8 @@ export default function Comment({
 
   const hidden = !!comment.deletedAt || comment.isMinimized;
 
-  // Mostrar solo si está autenticado y es el autor del comentario
-  const isAuthor = user && user.login === comment.author.login;
+  // Mostrar botón de editar solo si el usuario actual es el autor (seguro y sin error de tipo)
+  const isAuthor = comment.viewerDidAuthor;
 
   return (
     <div className="gsc-comment">
@@ -104,7 +104,7 @@ export default function Comment({
                   {formatDateDistance(comment.createdAt)}
                 </time>
               </span>
-              {/* Botón de Editar solo para el autor */}
+              {/* Botón Editar solo para el autor */}
               {isAuthor && (
                 <span className="ml-2">
                   <a
