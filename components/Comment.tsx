@@ -96,9 +96,14 @@ export default function Giscus({ onDiscussionCreateRequest, onError }: IGiscusPr
             {shouldCreateDiscussion && !data.reactionCount ? (
               t('reactions', { count: 0 })
             ) : (
-              <span className="color-text-primary">
+              <a
+                href={data.discussion.url}
+                target="_blank"
+                rel="noreferrer noopener nofollow"
+                className="color-text-primary"
+              >
                 {t('reactions', { count: data.reactionCount || 0 })}
-              </span>
+              </a>
             )}
           </h4>
           <div className="flex flex-auto items-center justify-center gap-2 text-sm mt-2">
@@ -121,9 +126,14 @@ export default function Giscus({ onDiscussionCreateRequest, onError }: IGiscusPr
               ) : data.error && !data.backData ? (
                 t('genericError', { message: data.error?.message || '' })
               ) : (
-                <span className="color-text-primary">
+                <a
+                  href={data.discussion.url}
+                  target="_blank"
+                  rel="noreferrer noopener nofollow"
+                  className="color-text-primary underline"
+                >
                   {t('comments', { count: data.totalCommentCount })}
-                </span>
+                </a>
               )}
             </h4>
             {shouldShowReplyCount ? (
