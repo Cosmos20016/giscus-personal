@@ -16,7 +16,7 @@ interface ICommentProps {
   replyBox?: ReactElement<typeof CommentBox>;
   onCommentUpdate?: (newComment: IComment, promise: Promise<unknown>) => void;
   onReplyUpdate?: (newReply: IReply, promise: Promise<unknown>) => void;
-  discussionNumber: number; // ¡Agregado!
+  discussionNumber: number; // ← AGREGADO
 }
 
 export default function Comment({
@@ -25,7 +25,7 @@ export default function Comment({
   replyBox,
   onCommentUpdate,
   onReplyUpdate,
-  discussionNumber, // ¡Agregado!
+  discussionNumber, // ← AGREGADO
 }: ICommentProps) {
   const { t, dir } = useGiscusTranslation();
   const formatDate = useDateFormatter();
