@@ -1,5 +1,5 @@
 import { ArrowUpIcon, KebabHorizontalIcon } from '@primer/octicons-react';
-import { ReactElement, ReactNode, useCallback, useContext, useState, useEffect } from 'react';
+import { ReactElement, ReactNode, useCallback, useContext, useState } from 'react';
 import { handleCommentClick, processCommentBody } from '../lib/adapter';
 import { IComment, IReply } from '../lib/types/adapter';
 import { Reaction, updateCommentReaction } from '../lib/reactions';
@@ -16,40 +16,7 @@ interface ICommentProps {
   replyBox?: ReactElement<typeof CommentBox>;
   onCommentUpdate?: (newComment: IComment, promise: Promise<unknown>) => void;
   onReplyUpdate?: (newReply: IReply, promise: Promise<unknown>) => void;
-}
-
-// Hook para obtener SIEMPRE el número de la discusión actual de la URL, incluso con navegación SPA
-function useDiscussionNumber() {
-  const [discussionNumber, setDiscussionNumber] = useState(() => {
-    if (typeof window !== 'undefined') {
-      const match = window.location.pathname.match(/discussions\/(\d+)/);
-      if (match && match[1]) return Number(match[1]);
-    }
-    return 1;
-  });
-
-  useEffect(() => {
-    function update() {
-      const match = window.location.pathname.match(/discussions\/(\d+)/);
-      if (match && match[1]) {
-        setDiscussionNumber(Number(match[1]));
-      }
-    }
-    window.addEventListener('popstate', update); // Navegación atrás/adelante
-    window.addEventListener('pushstate', update); // Cambios SPA (algunos routers)
-    window.addEventListener('replaceState', update); // Cambios SPA (algunos routers)
-    // Por seguridad, escucha cambios de URL (mutation observer opcional)
-    const interval = setInterval(update, 500);
-
-    return () => {
-      window.removeEventListener('popstate', update);
-      window.removeEventListener('pushstate', update);
-      window.removeEventListener('replaceState', update);
-      clearInterval(interval);
-    };
-  }, []);
-
-  return discussionNumber;
+  discussionNumber: number; // ¡Agregado!
 }
 
 export default function Comment({
@@ -58,14 +25,12 @@ export default function Comment({
   replyBox,
   onCommentUpdate,
   onReplyUpdate,
+  discussionNumber, // ¡Nuevo!
 }: ICommentProps) {
   const { t, dir } = useGiscusTranslation();
   const formatDate = useDateFormatter();
   const formatDateDistance = useRelativeTimeFormatter();
   const [backPage, setBackPage] = useState(0);
-
-  // SIEMPRE actual, incluso si navegas entre /discussions/1, /discussions/2, etc.
-  const discussionNumber = useDiscussionNumber();
 
   const replies = comment.replies.slice(-5 - backPage * 50);
   const remainingReplies = comment.replyCount - replies.length;
@@ -167,7 +132,6 @@ export default function Comment({
             ) : null}
           </div>
         ) : null}
-        {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions, jsx-a11y/click-events-have-key-events */}
         <div
           dir={children ? dir : 'auto'}
           className={`markdown gsc-comment-content${
