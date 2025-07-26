@@ -16,17 +16,7 @@ interface ICommentProps {
   replyBox?: ReactElement<typeof CommentBox>;
   onCommentUpdate?: (newComment: IComment, promise: Promise<unknown>) => void;
   onReplyUpdate?: (newReply: IReply, promise: Promise<unknown>) => void;
-}
-
-// Función para obtener el número de discusión desde la URL actual
-function getDiscussionNumber(): number {
-  if (typeof window !== 'undefined') {
-    const match = window.location.pathname.match(/discussions\/(\d+)/);
-    if (match && match[1]) {
-      return Number(match[1]);
-    }
-  }
-  return 1; // fallback seguro
+  discussionNumber: number; // ¡Agregado!
 }
 
 export default function Comment({
@@ -35,6 +25,7 @@ export default function Comment({
   replyBox,
   onCommentUpdate,
   onReplyUpdate,
+  discussionNumber, // ¡Agregado!
 }: ICommentProps) {
   const { t, dir } = useGiscusTranslation();
   const formatDate = useDateFormatter();
@@ -80,7 +71,6 @@ export default function Comment({
 
   const hidden = !!comment.deletedAt || comment.isMinimized;
   const isAuthor = comment.viewerDidAuthor;
-  const discussionNumber = getDiscussionNumber();
 
   return (
     <div className="gsc-comment">
