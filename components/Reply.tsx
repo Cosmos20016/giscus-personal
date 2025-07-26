@@ -54,7 +54,7 @@ export default function Reply({ reply, onReplyUpdate }: IReplyProps) {
                   href={reply.author.url}
                   className="flex min-w-0 items-center"
                 >
-                  <span className="link-primary overflow-hidden text-ellipsis font-semibold">
+                  <span className="link-primary overflow-hidden text-ellipsis font-semibold no-underline">
                     {reply.author.login}
                   </span>
                 </a>
