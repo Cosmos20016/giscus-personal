@@ -1,231 +1,246 @@
-import { ArrowUpIcon, KebabHorizontalIcon } from '@primer/octicons-react';
-import { ReactElement, ReactNode, useCallback, useContext, useState } from 'react';
-import { handleCommentClick, processCommentBody } from '../lib/adapter';
-import { IComment, IReply } from '../lib/types/adapter';
-import { Reaction, updateCommentReaction } from '../lib/reactions';
-import { toggleUpvote } from '../services/github/toggleUpvote';
+import { useContext, useEffect, useState } from 'react';
+import { AuthContext, ConfigContext } from '../lib/context';
+import { Trans, useGiscusTranslation } from '../lib/i18n';
+import { emitData } from '../lib/messages';
+import { CommentOrder, IMetadataMessage } from '../lib/types/giscus';
+import { useFrontBackDiscussion } from '../services/giscus/discussions';
+import Comment from './Comment';
 import CommentBox from './CommentBox';
 import ReactButtons from './ReactButtons';
-import Reply from './Reply';
-import { AuthContext } from '../lib/context';
-import { useDateFormatter, useGiscusTranslation, useRelativeTimeFormatter } from '../lib/i18n';
 
-interface ICommentProps {
-  children?: ReactNode;
-  comment: IComment;
-  replyBox?: ReactElement<typeof CommentBox>;
-  onCommentUpdate?: (newComment: IComment, promise: Promise<unknown>) => void;
-  onReplyUpdate?: (newReply: IReply, promise: Promise<unknown>) => void;
+interface IGiscusProps {
+  onDiscussionCreateRequest?: () => Promise<string>;
+  onError?: (message: string) => void;
 }
 
-export default function Comment({
-  children,
-  comment,
-  replyBox,
-  onCommentUpdate,
-  onReplyUpdate,
-}: ICommentProps) {
-  const { t, dir } = useGiscusTranslation();
-  const formatDate = useDateFormatter();
-  const formatDateDistance = useRelativeTimeFormatter();
-  const [backPage, setBackPage] = useState(0);
+export default function Giscus({ onDiscussionCreateRequest, onError }: IGiscusProps) {
+  const { token, origin } = useContext(AuthContext);
+  const { t } = useGiscusTranslation();
+  const {
+    repo,
+    term,
+    number,
+    category,
+    strict,
+    reactionsEnabled,
+    emitMetadata,
+    inputPosition,
+    defaultCommentOrder,
+  } = useContext(ConfigContext);
+  const [orderBy, setOrderBy] = useState<CommentOrder>(defaultCommentOrder);
+  const query = { repo, term, category, number, strict };
 
-  const replies = comment.replies.slice(-5 - backPage * 50);
-  const remainingReplies = comment.replyCount - replies.length;
+  const { addNewComment, updateReactions, increaseSize, backMutators, frontMutators, ...data } =
+    useFrontBackDiscussion(query, token, orderBy);
 
-  const hasNextPage = replies.length < comment.replies.length;
-  const hasUnfetchedReplies = !hasNextPage && remainingReplies > 0;
+  useEffect(() => {
+    if (data.error && onError) {
+      onError(data.error?.message);
+    }
+  }, [data.error, onError]);
 
-  const { token } = useContext(AuthContext);
+  useEffect(() => {
+    if (!emitMetadata || !data.discussion.id) return;
+    const message: IMetadataMessage = {
+      discussion: data.discussion,
+      viewer: data.viewer,
+    };
+    emitData(message, origin);
+  }, [data.discussion, data.viewer, emitMetadata, origin]);
 
-  const updateReactions = useCallback(
-    (reaction: Reaction, promise: Promise<unknown>) =>
-      onCommentUpdate(updateCommentReaction(comment, reaction), promise),
-    [comment, onCommentUpdate],
+  useEffect(() => {
+    import('../lib/vendor/math-renderer-element');
+  }, []);
+
+  const handleDiscussionCreateRequest = async () => {
+    const id = await onDiscussionCreateRequest();
+    // Force revalidate
+    frontMutators.mutate();
+    backMutators.mutate();
+    return id;
+  };
+
+  const mainCommentBox = (
+    <CommentBox
+      discussionId={data.discussion.id}
+      context={repo}
+      onSubmit={addNewComment}
+      onDiscussionCreateRequest={handleDiscussionCreateRequest}
+    />
   );
 
-  const incrementBackPage = () => setBackPage(backPage + 1);
+  const shouldCreateDiscussion = data.isNotFound && !number;
+  const shouldShowBranding = !!data.discussion.url;
 
-  const upvote = useCallback(() => {
-    const upvoteCount = comment.viewerHasUpvoted
-      ? comment.upvoteCount - 1
-      : comment.upvoteCount + 1;
+  const shouldShowReplyCount =
+    !data.error && !data.isNotFound && !data.isLoading && data.totalReplyCount > 0;
 
-    const promise = toggleUpvote(
-      { upvoteInput: { subjectId: comment.id } },
-      token,
-      comment.viewerHasUpvoted,
+  const shouldShowCommentBox =
+    (data.isRateLimited && !token) ||
+    (!data.isLoading && !data.isLocked && (!data.error || (data.isNotFound && !number)));
+
+  if (data.isLoading) {
+    return (
+      <div className="gsc-loading">
+        <div className="gsc-loading-image" />
+        <span className="gsc-loading-text color-fg-muted">{t('loadingComments')}</span>
+      </div>
     );
-
-    onCommentUpdate(
-      {
-        ...comment,
-        upvoteCount,
-        viewerHasUpvoted: !comment.viewerHasUpvoted,
-      },
-      promise,
-    );
-  }, [comment, onCommentUpdate, token]);
-
-  const hidden = !!comment.deletedAt || comment.isMinimized;
+  }
 
   return (
-    <div className="gsc-comment">
-      <div
-        className={`color-bg-primary w-full min-w-0 rounded-md border ${
-          comment.viewerDidAuthor ? 'color-box-border-info' : 'color-border-primary'
-        }`}
-      >
-        {!comment.isMinimized ? (
-          <div className="gsc-comment-header">
-            <div className="gsc-comment-author">
-              <a
-                rel="nofollow noopener noreferrer"
-                target="_blank"
-                href={comment.author.url}
-                className="gsc-comment-author-avatar"
-              >
-                <img
-                  className="mr-2 rounded-full"
-                  src={comment.author.avatarUrl}
-                  width="30"
-                  height="30"
-                  alt={`@${comment.author.login}`}
-                  loading="lazy"
-                />
-                <span className="link-primary overflow-hidden text-ellipsis font-semibold">
-                  {comment.author.login}
-                </span>
-              </a>
-              <span className="link-secondary overflow-hidden text-ellipsis">
-                <time
-                  className="whitespace-nowrap"
-                  title={formatDate(comment.createdAt)}
-                  dateTime={comment.createdAt}
-                >
-                  {formatDateDistance(comment.createdAt)}
-                </time>
+    <div className="color-text-primary gsc-main">
+      {reactionsEnabled && !data.isLoading && (shouldCreateDiscussion || !data.error) ? (
+        <div className="gsc-reactions">
+          <h4 className="gsc-reactions-count">
+            {shouldCreateDiscussion && !data.reactionCount ? (
+              t('reactions', { count: 0 })
+            ) : (
+              <span className="color-text-primary">
+                {t('reactions', { count: data.reactionCount || 0 })}
               </span>
-              {comment.authorAssociation !== 'NONE' ? (
-                <div className="hidden text-xs leading-[18px] sm:inline-flex">
-                  <span className="color-box-border-info font-medium capitalize ml-1 rounded-xl border px-[7px]">
-                    {t(comment.authorAssociation)}
-                  </span>
-                </div>
-              ) : null}
-            </div>
-            {comment.lastEditedAt ? (
-              <button
-                className="color-text-secondary gsc-comment-edited"
-                title={t('lastEditedAt', { date: formatDate(comment.lastEditedAt) })}
-              >
-                {t('edited')}
-              </button>
+            )}
+          </h4>
+          <div className="flex flex-auto items-center justify-center gap-2 text-sm mt-2">
+            <ReactButtons
+              subjectId={data.discussion.id}
+              reactionGroups={data.discussion.reactions}
+              onReact={updateReactions}
+              onDiscussionCreateRequest={handleDiscussionCreateRequest}
+            />
+          </div>
+        </div>
+      ) : null}
+
+      <div className="gsc-comments">
+        <div className="gsc-header">
+          <div className="gsc-left-header">
+            <h4 className="gsc-comments-count">
+              {shouldCreateDiscussion && !data.totalCommentCount ? (
+                t('comments', { count: 0 })
+              ) : data.error && !data.backData ? (
+                t('genericError', { message: data.error?.message || '' })
+              ) : (
+                <span className="color-text-primary">
+                  {t('comments', { count: data.totalCommentCount })}
+                </span>
+              )}
+            </h4>
+            {shouldShowReplyCount ? (
+              <>
+                <h4 className="gsc-comments-count-separator">·</h4>
+                <h4 className="gsc-replies-count">
+                  {t('replies', {
+                    count: data.totalReplyCount,
+                    plus: data.numHidden > 0 ? '+' : '',
+                  })}
+                </h4>
+              </>
+            ) : null}
+            {shouldShowBranding ? (
+              <em className="color-text-secondary text-sm">
+                <Trans
+                  i18nKey="common:poweredBy"
+                  components={{
+                    a: (
+                      <a
+                        href="https://kevinborja.com/"
+                        target="_blank"
+                        rel="noreferrer noopener nofollow"
+                        className="link-secondary"
+                      />
+                    ),
+                  }}
+                />
+              </em>
             ) : null}
           </div>
-        ) : null}
-        {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions, jsx-a11y/click-events-have-key-events */}
-        <div
-          dir={children ? dir : 'auto'}
-          className={`markdown gsc-comment-content${
-            comment.isMinimized ? ' minimized color-bg-tertiary border-color-primary' : ''
-          }`}
-          onClick={handleCommentClick}
-          dangerouslySetInnerHTML={
-            hidden ? undefined : { __html: processCommentBody(comment.bodyHTML) }
-          }
-        >
-          {hidden ? (
-            <em className="color-text-secondary">
-              {comment.deletedAt ? t('thisCommentWasDeleted') : t('thisCommentWasMinimized')}
-            </em>
+          {data.totalCommentCount > 0 ? (
+            <ul className="gsc-right-header BtnGroup">
+              <li
+                className={`BtnGroup-item ${orderBy === 'oldest' ? 'BtnGroup-item--selected' : ''}`}
+                aria-current={orderBy === 'oldest'}
+              >
+                <button className="btn" onClick={() => setOrderBy('oldest')}>
+                  {t('oldest')}
+                </button>
+              </li>
+              <li
+                className={`BtnGroup-item ${orderBy === 'newest' ? 'BtnGroup-item--selected' : ''}`}
+                aria-current={orderBy === 'newest'}
+              >
+                <button className="btn" onClick={() => setOrderBy('newest')}>
+                  {t('newest')}
+                </button>
+              </li>
+            </ul>
           ) : null}
         </div>
-        {children}
-        {!comment.isMinimized && onCommentUpdate ? (
-          <div className="gsc-comment-footer">
-            <div className="gsc-comment-reactions">
-              <button
-                type="button"
-                className={`gsc-upvote-button gsc-social-reaction-summary-item ${
-                  comment.viewerHasUpvoted ? 'has-reacted' : ''
-                }`}
-                onClick={upvote}
-                // TODO: Remove `true ||` when GitHub allows upvote with app-issued user tokens
-                // https://github.com/orgs/community/discussions/3968
-                disabled={true || !token || !comment.viewerCanUpvote}
-                aria-label={token ? t('upvote') : t('youMustBeSignedInToUpvote')}
-                title={
-                  token
-                    ? t('upvotes', { count: comment.upvoteCount })
-                    : t('youMustBeSignedInToUpvote')
-                }
-              >
-                <ArrowUpIcon className="gsc-direct-reaction-button-emoji" />
 
-                <span
-                  className="gsc-social-reaction-summary-item-count"
-                  title={t('upvotes', { count: comment.upvoteCount })}
-                >
-                  {comment.upvoteCount}
+        {shouldShowCommentBox && inputPosition === 'top' ? mainCommentBox : null}
+
+        <div className={`gsc-timeline ${!data.totalCommentCount ? 'hidden' : ''}`}>
+          {!data.isLoading
+            ? data.frontComments.map((comment) => (
+                <Comment
+                  key={comment.id}
+                  comment={comment}
+                  replyBox={
+                    token && !data.isLocked ? (
+                      <CommentBox
+                        discussionId={data.discussion.id}
+                        context={repo}
+                        onSubmit={frontMutators.addNewReply}
+                        replyToId={comment.id}
+                      />
+                    ) : undefined
+                  }
+                  onCommentUpdate={frontMutators.updateComment}
+                  onReplyUpdate={frontMutators.updateReply}
+                />
+              ))
+            : null}
+
+          {data.numHidden > 0 ? (
+            <div className="pagination-loader-container gsc-pagination">
+              <button
+                className="gsc-pagination-button color-border-primary"
+                onClick={increaseSize}
+                disabled={data.isLoadingMore}
+              >
+                <span className="color-text-secondary">
+                  {t('hiddenItems', { count: data.numHidden })}
+                </span>
+                <span className="color-text-link font-semibold">
+                  {data.isLoadingMore ? t('loading') : t('loadMore')}…
                 </span>
               </button>
-              {!hidden ? (
-                <ReactButtons
-                  reactionGroups={comment.reactions}
-                  subjectId={comment.id}
-                  onReact={updateReactions}
-                  popoverPosition="top"
+            </div>
+          ) : null}
+
+          {!data.isLoading
+            ? data.backComments.map((comment) => (
+                <Comment
+                  key={comment.id}
+                  comment={comment}
+                  replyBox={
+                    token && !data.isLocked ? (
+                      <CommentBox
+                        discussionId={data.discussion.id}
+                        context={repo}
+                        onSubmit={backMutators.addNewReply}
+                        replyToId={comment.id}
+                      />
+                    ) : undefined
+                  }
+                  onCommentUpdate={backMutators.updateComment}
+                  onReplyUpdate={backMutators.updateReply}
                 />
-              ) : null}
-            </div>
-            <div className="gsc-comment-replies-count">
-              <span className="color-text-tertiary text-xs">
-                {t('replies', { count: comment.replyCount, plus: '' })}
-              </span>
-            </div>
-          </div>
-        ) : null}
-        {comment.replies.length > 0 ? (
-          <div
-            className={`color-bg-inset color-border-primary gsc-replies ${
-              !replyBox || hidden ? 'rounded-b-md' : ''
-            }`}
-          >
-            {hasNextPage || hasUnfetchedReplies ? (
-              <div className="flex h-8 items-center mb-2 pl-4">
-                <div className="flex w-[29px] shrink-0 content-center mr-[9px]">
-                  <KebabHorizontalIcon className="w-full rotate-90 fill-[var(--color-border-muted)]" />
-                </div>
+              ))
+            : null}
+        </div>
 
-                {hasNextPage ? (
-                  <button className="color-text-link underline" onClick={incrementBackPage}>
-                    {t('showPreviousReplies', { count: remainingReplies })}
-                  </button>
-                ) : null}
-
-                {hasUnfetchedReplies ? (
-                  <a
-                    href={comment.url}
-                    className="color-text-link underline"
-                    rel="nofollow noopener noreferrer"
-                    target="_blank"
-                  >
-                    {t('seePreviousRepliesOnGitHub', { count: remainingReplies })}
-                  </a>
-                ) : null}
-              </div>
-            ) : null}
-
-            {onReplyUpdate
-              ? replies.map((reply) => (
-                  <Reply key={reply.id} reply={reply} onReplyUpdate={onReplyUpdate} />
-                ))
-              : null}
-          </div>
-        ) : null}
-
-        {!comment.isMinimized && !!replyBox ? replyBox : null}
+        {shouldShowCommentBox && inputPosition !== 'top' ? mainCommentBox : null}
       </div>
     </div>
   );
