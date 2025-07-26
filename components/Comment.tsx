@@ -16,7 +16,6 @@ interface ICommentProps {
   replyBox?: ReactElement<typeof CommentBox>;
   onCommentUpdate?: (newComment: IComment, promise: Promise<unknown>) => void;
   onReplyUpdate?: (newReply: IReply, promise: Promise<unknown>) => void;
-  discussionNumber?: number;
 }
 
 export default function Comment({
@@ -25,7 +24,6 @@ export default function Comment({
   replyBox,
   onCommentUpdate,
   onReplyUpdate,
-  discussionNumber,
 }: ICommentProps) {
   const { t, dir } = useGiscusTranslation();
   const formatDate = useDateFormatter();
@@ -70,14 +68,6 @@ export default function Comment({
   }, [comment, onCommentUpdate, token]);
 
   const hidden = !!comment.deletedAt || comment.isMinimized;
-  const isAuthor = comment.viewerDidAuthor;
-
-  // Determina el número de discusión seguro
-  let discNumber = discussionNumber;
-  if (!discNumber && comment?.url) {
-    const match = comment.url.match(/discussions\/(\d+)/);
-    if (match) discNumber = Number(match[1]);
-  }
 
   return (
     <div className="gsc-comment">
@@ -89,7 +79,12 @@ export default function Comment({
         {!comment.isMinimized ? (
           <div className="gsc-comment-header">
             <div className="gsc-comment-author">
-              <span className="gsc-comment-author-avatar">
+              <a
+                rel="nofollow noopener noreferrer"
+                target="_blank"
+                href={comment.author.url}
+                className="gsc-comment-author-avatar"
+              >
                 <img
                   className="mr-2 rounded-full"
                   src={comment.author.avatarUrl}
@@ -101,8 +96,8 @@ export default function Comment({
                 <span className="link-primary overflow-hidden text-ellipsis font-semibold">
                   {comment.author.login}
                 </span>
-              </span>
-              <span className="link-secondary overflow-hidden text-ellipsis no-underline">
+              </a>
+              <span className="link-secondary overflow-hidden text-ellipsis">
                 <time
                   className="whitespace-nowrap"
                   title={formatDate(comment.createdAt)}
@@ -118,19 +113,6 @@ export default function Comment({
                   </span>
                 </div>
               ) : null}
-              {/* Botón Editar solo para el autor */}
-              {isAuthor && discNumber && (
-                <span className="ml-2">
-                  <a
-                    href={`https://github.com/Cosmos20016/Gesti-n-de-comentarios/discussions/${discNumber}#discussioncomment-${comment.id}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="color-text-link underline text-xs"
-                  >
-                    Editar
-                  </a>
-                </span>
-              )}
             </div>
             {comment.lastEditedAt ? (
               <button
@@ -142,17 +124,13 @@ export default function Comment({
             ) : null}
           </div>
         ) : null}
+        {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions, jsx-a11y/click-events-have-key-events */}
         <div
           dir={children ? dir : 'auto'}
           className={`markdown gsc-comment-content${
             comment.isMinimized ? ' minimized color-bg-tertiary border-color-primary' : ''
           }`}
           onClick={handleCommentClick}
-          role="button"
-          tabIndex={0}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter' || e.key === ' ') handleCommentClick(e);
-          }}
           dangerouslySetInnerHTML={
             hidden ? undefined : { __html: processCommentBody(comment.bodyHTML) }
           }
@@ -173,6 +151,8 @@ export default function Comment({
                   comment.viewerHasUpvoted ? 'has-reacted' : ''
                 }`}
                 onClick={upvote}
+                // TODO: Remove `true ||` when GitHub allows upvote with app-issued user tokens
+                // https://github.com/orgs/community/discussions/3968
                 disabled={true || !token || !comment.viewerCanUpvote}
                 aria-label={token ? t('upvote') : t('youMustBeSignedInToUpvote')}
                 title={
