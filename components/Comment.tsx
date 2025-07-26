@@ -97,7 +97,7 @@ export default function Comment({
                   {comment.author.login}
                 </span>
               </a>
-              <span className="link-secondary overflow-hidden text-ellipsis">
+              <span className="link-secondary overflow-hidden text-ellipsis no-underline">
                 <time
                   className="whitespace-nowrap"
                   title={formatDate(comment.createdAt)}
