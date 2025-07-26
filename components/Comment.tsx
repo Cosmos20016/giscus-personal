@@ -118,7 +118,7 @@ export default function Comment({
               {isAuthor && (
                 <span className="ml-2">
                   <a
-                    href={`https://github.com/Cosmos20016/Gesti-n-de-comentarios/discussions/${discussionNumber}/comments/${comment.id}/edit`}
+                    href={`https://github.com/Cosmos20016/Gesti-n-de-comentarios/discussions/${discussionNumber}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="color-text-link underline text-xs"
