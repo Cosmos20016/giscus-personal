@@ -8,11 +8,7 @@ import CommentBox from './CommentBox';
 import ReactButtons from './ReactButtons';
 import Reply from './Reply';
 import { AuthContext } from '../lib/context';
-import {
-  useDateFormatter,
-  useGiscusTranslation,
-  useRelativeTimeFormatter,
-} from '../lib/i18n';
+import { useDateFormatter, useGiscusTranslation, useRelativeTimeFormatter } from '../lib/i18n';
 
 interface ICommentProps {
   children?: ReactNode;
@@ -47,7 +43,7 @@ export default function Comment({
   const updateReactions = useCallback(
     (reaction: Reaction, promise: Promise<unknown>) =>
       onCommentUpdate(updateCommentReaction(comment, reaction), promise),
-    [comment, onCommentUpdate]
+    [comment, onCommentUpdate],
   );
 
   const incrementBackPage = () => setBackPage(backPage + 1);
@@ -60,7 +56,7 @@ export default function Comment({
     const promise = toggleUpvote(
       { upvoteInput: { subjectId: comment.id } },
       token,
-      comment.viewerHasUpvoted
+      comment.viewerHasUpvoted,
     );
 
     onCommentUpdate(
@@ -69,7 +65,7 @@ export default function Comment({
         upvoteCount,
         viewerHasUpvoted: !comment.viewerHasUpvoted,
       },
-      promise
+      promise,
     );
   }, [comment, onCommentUpdate, token]);
 
@@ -221,11 +217,13 @@ export default function Comment({
                 <div className="flex w-[29px] shrink-0 content-center mr-[9px]">
                   <KebabHorizontalIcon className="w-full rotate-90 fill-[var(--color-border-muted)]" />
                 </div>
+
                 {hasNextPage ? (
                   <button className="color-text-link underline" onClick={incrementBackPage}>
                     {t('showPreviousReplies', { count: remainingReplies })}
                   </button>
                 ) : null}
+
                 {hasUnfetchedReplies ? (
                   <a
                     href={comment.url}
@@ -238,6 +236,7 @@ export default function Comment({
                 ) : null}
               </div>
             ) : null}
+
             {onReplyUpdate
               ? replies.map((reply) => (
                   <Reply key={reply.id} reply={reply} onReplyUpdate={onReplyUpdate} />
@@ -245,6 +244,7 @@ export default function Comment({
               : null}
           </div>
         ) : null}
+
         {!comment.isMinimized && !!replyBox ? replyBox : null}
       </div>
     </div>
