@@ -93,14 +93,19 @@ export default function Giscus({ onDiscussionCreateRequest, onError }: IGiscusPr
       {reactionsEnabled && !data.isLoading && (shouldCreateDiscussion || !data.error) ? (
         <div className="gsc-reactions">
           <h4 className="gsc-reactions-count">
-  {shouldCreateDiscussion && !data.reactionCount ? (
-    t('reactions', { count: 0 })
-  ) : (
-    <span className="color-text-primary">
-      {t('reactions', { count: data.reactionCount })}
-    </span>
-  )}
-</h4>
+            {shouldCreateDiscussion && !data.reactionCount ? (
+              t('reactions', { count: 0 })
+            ) : (
+              <a
+                href={data.discussion.url}
+                target="_blank"
+                rel="noreferrer noopener nofollow"
+                className="color-text-primary"
+              >
+                {t('reactions', { count: data.reactionCount || 0 })}
+              </a>
+            )}
+          </h4>
           <div className="flex flex-auto items-center justify-center gap-2 text-sm mt-2">
             <ReactButtons
               subjectId={data.discussion.id}
@@ -116,16 +121,21 @@ export default function Giscus({ onDiscussionCreateRequest, onError }: IGiscusPr
         <div className="gsc-header">
           <div className="gsc-left-header">
          <h4 className="gsc-comments-count">
-  {shouldCreateDiscussion && !data.totalCommentCount ? (
-    t('comments', { count: 0 })
-  ) : data.error && !data.backData ? (
-    t('genericError', { message: data.error?.message || '' })
-  ) : (
-    <span className="color-text-primary underline">
-      {t('comments', { count: data.totalCommentCount })}
-    </span>
-  )}
-</h4>
+              {shouldCreateDiscussion && !data.totalCommentCount ? (
+                t('comments', { count: 0 })
+              ) : data.error && !data.backData ? (
+                t('genericError', { message: data.error?.message || '' })
+              ) : (
+                <a
+                  href={data.discussion.url}
+                  target="_blank"
+                  rel="noreferrer noopener nofollow"
+                  className="color-text-primary underline"
+                >
+                  {t('comments', { count: data.totalCommentCount })}
+                </a>
+              )}
+            </h4>
             {shouldShowReplyCount ? (
               <>
                 <h4 className="gsc-comments-count-separator">·</h4>
