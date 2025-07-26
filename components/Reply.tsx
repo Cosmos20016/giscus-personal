@@ -54,7 +54,7 @@ export default function Reply({ reply, onReplyUpdate }: IReplyProps) {
                   href={reply.author.url}
                   className="flex min-w-0 items-center"
                 >
-                  <span className="link-primary overflow-hidden text-ellipsis font-semibold no-underline">
+                  <span className="link-primary overflow-hidden text-ellipsis font-semibold">
                     {reply.author.login}
                   </span>
                 </a>
@@ -62,7 +62,7 @@ export default function Reply({ reply, onReplyUpdate }: IReplyProps) {
                   rel="nofollow noopener noreferrer"
                   target="_blank"
                   href={reply.url}
-                  className="link-secondary overflow-hidden text-ellipsis"
+                  className="link-secondary overflow-hidden text-ellipsis no-underline"
                 >
                   <time
                     className="whitespace-nowrap"
