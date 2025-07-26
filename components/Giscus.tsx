@@ -120,7 +120,7 @@ export default function Giscus({ onDiscussionCreateRequest, onError }: IGiscusPr
       <div className="gsc-comments">
         <div className="gsc-header">
           <div className="gsc-left-header">
-         <h4 className="gsc-comments-count">
+            <h4 className="gsc-comments-count">
               {shouldCreateDiscussion && !data.totalCommentCount ? (
                 t('comments', { count: 0 })
               ) : data.error && !data.backData ? (
