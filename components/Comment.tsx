@@ -36,7 +36,7 @@ export default function Comment({
   const hasNextPage = replies.length < comment.replies.length;
   const hasUnfetchedReplies = !hasNextPage && remainingReplies > 0;
 
-  const { token } = useContext(AuthContext);
+  const { token, user } = useContext(AuthContext);
 
   const updateReactions = useCallback(
     (reaction: Reaction, promise: Promise<unknown>) =>
@@ -68,6 +68,9 @@ export default function Comment({
   }, [comment, onCommentUpdate, token]);
 
   const hidden = !!comment.deletedAt || comment.isMinimized;
+
+  // Nuevo: Para saber si el usuario autenticado es el autor del comentario
+  const isAuthor = user && user.login === comment.author.login;
 
   return (
     <div className="gsc-comment">
@@ -101,6 +104,26 @@ export default function Comment({
                   {formatDateDistance(comment.createdAt)}
                 </time>
               </span>
+              {isAuthor && (
+                <span className="ml-2 flex gap-2">
+                  <a
+                    href={`https://github.com/Cosmos20016/Gesti-n-de-comentarios/discussions/1/comments/${comment.id}/edit`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="color-text-link underline text-xs"
+                  >
+                    Editar
+                  </a>
+                  <a
+                    href={`https://github.com/Cosmos20016/Gesti-n-de-comentarios/discussions/1/comments/${comment.id}/edit`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="color-text-link underline text-xs"
+                  >
+                    Borrar
+                  </a>
+                </span>
+              )}
               {comment.authorAssociation !== 'NONE' ? (
                 <div className="hidden text-xs leading-[18px] sm:inline-flex">
                   <span className="color-box-border-info font-medium capitalize ml-1 rounded-xl border px-[7px]">
