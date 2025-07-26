@@ -72,6 +72,9 @@ export default function Comment({
   // Mostrar botón de editar solo si el usuario actual es el autor (seguro y sin error de tipo)
   const isAuthor = comment.viewerDidAuthor;
 
+  // Obtén el número de discusión desde el comentario (ajusta el nombre si es diferente)
+  const discussionNumber = comment.discussionNumber || 1; // Cambia "1" si quieres otro número por defecto
+
   return (
     <div className="gsc-comment">
       <div
@@ -108,7 +111,7 @@ export default function Comment({
               {isAuthor && (
                 <span className="ml-2">
                   <a
-                    href={`https://github.com/Cosmos20016/Gesti-n-de-comentarios/discussions/1/comments/${comment.id}/edit`}
+                    href={`https://github.com/Cosmos20016/Gesti-n-de-comentarios/discussions/${discussionNumber}/comments/${comment.id}/edit`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="color-text-link underline text-xs"
