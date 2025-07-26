@@ -97,6 +97,7 @@ export default function Giscus({ onDiscussionCreateRequest, onError }: IGiscusPr
               t('reactions', { count: 0 })
             ) : (
               <a
+                href={data.discussion.url}
                 target="_blank"
                 rel="noreferrer noopener nofollow"
                 className="color-text-primary"
@@ -126,6 +127,7 @@ export default function Giscus({ onDiscussionCreateRequest, onError }: IGiscusPr
                 t('genericError', { message: data.error?.message || '' })
               ) : (
                 <a
+                  href={data.discussion.url}
                   target="_blank"
                   rel="noreferrer noopener nofollow"
                   className="color-text-primary underline"
@@ -152,7 +154,7 @@ export default function Giscus({ onDiscussionCreateRequest, onError }: IGiscusPr
                   components={{
                     a: (
                       <a
-                        href="https://kevinborja.com/"
+                        href="https://giscus.app"
                         target="_blank"
                         rel="noreferrer noopener nofollow"
                         className="link-secondary"
