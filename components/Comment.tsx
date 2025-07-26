@@ -18,6 +18,17 @@ interface ICommentProps {
   onReplyUpdate?: (newReply: IReply, promise: Promise<unknown>) => void;
 }
 
+// Función para obtener el número de discusión desde la URL actual
+function getDiscussionNumber(): number {
+  if (typeof window !== 'undefined') {
+    const match = window.location.pathname.match(/discussions\/(\d+)/);
+    if (match && match[1]) {
+      return Number(match[1]);
+    }
+  }
+  return 1; // fallback seguro
+}
+
 export default function Comment({
   children,
   comment,
@@ -68,12 +79,8 @@ export default function Comment({
   }, [comment, onCommentUpdate, token]);
 
   const hidden = !!comment.deletedAt || comment.isMinimized;
-
-  // Botón "Editar" solo para el autor del comentario
   const isAuthor = comment.viewerDidAuthor;
-
-  // Número de discusión fijo (ajusta "1" si usas otra discusión)
-  const discussionNumber = 1;
+  const discussionNumber = getDiscussionNumber();
 
   return (
     <div className="gsc-comment">
