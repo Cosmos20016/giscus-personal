@@ -58,12 +58,7 @@ export default function Reply({ reply, onReplyUpdate }: IReplyProps) {
                     {reply.author.login}
                   </span>
                 </a>
-                <a
-                  rel="nofollow noopener noreferrer"
-                  target="_blank"
-                  href={reply.url}
-                  className="link-secondary overflow-hidden text-ellipsis no-underline"
-                >
+                <span className="link-secondary overflow-hidden text-ellipsis no-underline">
                   <time
                     className="whitespace-nowrap"
                     title={formatDate(reply.createdAt)}
@@ -71,7 +66,7 @@ export default function Reply({ reply, onReplyUpdate }: IReplyProps) {
                   >
                     {formatDateDistance(reply.createdAt)}
                   </time>
-                </a>
+                </span>
                 {reply.authorAssociation !== 'NONE' ? (
                   <div className="hidden text-xs leading-[18px] sm:inline-flex">
                     <span className="color-box-border-info font-medium capitalize rounded-xl border px-[7px]">
