@@ -69,11 +69,11 @@ export default function Comment({
 
   const hidden = !!comment.deletedAt || comment.isMinimized;
 
-  // Mostrar botón de editar solo si el usuario actual es el autor (seguro y sin error de tipo)
+  // Botón "Editar" solo para el autor del comentario
   const isAuthor = comment.viewerDidAuthor;
 
-  // Obtén el número de discusión desde el comentario (ajusta el nombre si es diferente)
-  const discussionNumber = comment.discussionNumber || 1; // Cambia "1" si quieres otro número por defecto
+  // Número de discusión fijo (ajusta "1" si usas otra discusión)
+  const discussionNumber = 1;
 
   return (
     <div className="gsc-comment">
