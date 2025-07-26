@@ -121,7 +121,7 @@ export default function Giscus({ onDiscussionCreateRequest, onError }: IGiscusPr
               ) : data.error && !data.backData ? (
                 t('genericError', { message: data.error?.message || '' })
               ) : (
-                <span className="color-text-primary underline">
+                <span className="color-text-primary">
                   {t('comments', { count: data.totalCommentCount })}
                 </span>
               )}
