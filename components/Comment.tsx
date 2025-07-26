@@ -16,7 +16,7 @@ interface ICommentProps {
   replyBox?: ReactElement<typeof CommentBox>;
   onCommentUpdate?: (newComment: IComment, promise: Promise<unknown>) => void;
   onReplyUpdate?: (newReply: IReply, promise: Promise<unknown>) => void;
-  discussionNumber?: number; // <- Añade esto si lo tienes disponible desde el padre
+  discussionNumber?: number;
 }
 
 export default function Comment({
@@ -25,7 +25,7 @@ export default function Comment({
   replyBox,
   onCommentUpdate,
   onReplyUpdate,
-  discussionNumber, // <- Añade esto si lo tienes disponible desde el padre
+  discussionNumber,
 }: ICommentProps) {
   const { t, dir } = useGiscusTranslation();
   const formatDate = useDateFormatter();
@@ -72,9 +72,7 @@ export default function Comment({
   const hidden = !!comment.deletedAt || comment.isMinimized;
   const isAuthor = comment.viewerDidAuthor;
 
-  // Asegúrate de tener el número de la discusión.
-  // Si no lo tienes como prop, intenta sacarlo del objeto comment.discussion.number, o pásalo desde el padre.
-  // Si tampoco lo tienes, puedes intentar extraerlo del comentario URL (si existe).
+  // Determina el número de discusión
   let discNumber = discussionNumber;
   if (!discNumber && comment?.url) {
     const match = comment.url.match(/discussions\/(\d+)/);
@@ -144,12 +142,18 @@ export default function Comment({
             ) : null}
           </div>
         ) : null}
+        {/* Corregido: Accesibilidad en el div con onClick */}
         <div
           dir={children ? dir : 'auto'}
           className={`markdown gsc-comment-content${
             comment.isMinimized ? ' minimized color-bg-tertiary border-color-primary' : ''
           }`}
           onClick={handleCommentClick}
+          role="button"
+          tabIndex={0}
+          onKeyDown={e => {
+            if (e.key === 'Enter' || e.key === ' ') handleCommentClick(e);
+          }}
           dangerouslySetInnerHTML={
             hidden ? undefined : { __html: processCommentBody(comment.bodyHTML) }
           }
