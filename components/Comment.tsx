@@ -16,6 +16,7 @@ interface ICommentProps {
   replyBox?: ReactElement<typeof CommentBox>;
   onCommentUpdate?: (newComment: IComment, promise: Promise<unknown>) => void;
   onReplyUpdate?: (newReply: IReply, promise: Promise<unknown>) => void;
+  discussionNumber?: number; // <- Añade esto si lo tienes disponible desde el padre
 }
 
 export default function Comment({
@@ -24,6 +25,7 @@ export default function Comment({
   replyBox,
   onCommentUpdate,
   onReplyUpdate,
+  discussionNumber, // <- Añade esto si lo tienes disponible desde el padre
 }: ICommentProps) {
   const { t, dir } = useGiscusTranslation();
   const formatDate = useDateFormatter();
@@ -68,6 +70,16 @@ export default function Comment({
   }, [comment, onCommentUpdate, token]);
 
   const hidden = !!comment.deletedAt || comment.isMinimized;
+  const isAuthor = comment.viewerDidAuthor;
+
+  // Asegúrate de tener el número de la discusión.
+  // Si no lo tienes como prop, intenta sacarlo del objeto comment.discussion.number, o pásalo desde el padre.
+  // Si tampoco lo tienes, puedes intentar extraerlo del comentario URL (si existe).
+  let discNumber = discussionNumber;
+  if (!discNumber && comment?.url) {
+    const match = comment.url.match(/discussions\/(\d+)/);
+    if (match) discNumber = Number(match[1]);
+  }
 
   return (
     <div className="gsc-comment">
@@ -108,6 +120,19 @@ export default function Comment({
                   </span>
                 </div>
               ) : null}
+              {/* Botón Editar solo para el autor */}
+              {isAuthor && discNumber && (
+                <span className="ml-2">
+                  <a
+                    href={`https://github.com/Cosmos20016/Gesti-n-de-comentarios/discussions/${discNumber}#discussioncomment-${comment.id}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="color-text-link underline text-xs"
+                  >
+                    Editar
+                  </a>
+                </span>
+              )}
             </div>
             {comment.lastEditedAt ? (
               <button
@@ -119,7 +144,6 @@ export default function Comment({
             ) : null}
           </div>
         ) : null}
-        {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions, jsx-a11y/click-events-have-key-events */}
         <div
           dir={children ? dir : 'auto'}
           className={`markdown gsc-comment-content${
@@ -146,8 +170,6 @@ export default function Comment({
                   comment.viewerHasUpvoted ? 'has-reacted' : ''
                 }`}
                 onClick={upvote}
-                // TODO: Remove `true ||` when GitHub allows upvote with app-issued user tokens
-                // https://github.com/orgs/community/discussions/3968
                 disabled={true || !token || !comment.viewerCanUpvote}
                 aria-label={token ? t('upvote') : t('youMustBeSignedInToUpvote')}
                 title={
