@@ -1,5 +1,5 @@
 import { ArrowUpIcon, KebabHorizontalIcon } from '@primer/octicons-react';
-import { ReactElement, ReactNode, useCallback, useContext, useState, useEffect } from 'react';
+import { ReactElement, ReactNode, useCallback, useContext, useState } from 'react';
 import { handleCommentClick, processCommentBody } from '../lib/adapter';
 import { IComment, IReply } from '../lib/types/adapter';
 import { Reaction, updateCommentReaction } from '../lib/reactions';
@@ -18,6 +18,17 @@ interface ICommentProps {
   onReplyUpdate?: (newReply: IReply, promise: Promise<unknown>) => void;
 }
 
+// Obtiene el número de discusión según la URL actual, siempre actual
+function useDiscussionNumber() {
+  if (typeof window !== 'undefined') {
+    const match = window.location.pathname.match(/discussions\/(\d+)/);
+    if (match && match[1]) {
+      return Number(match[1]);
+    }
+  }
+  return 1;
+}
+
 export default function Comment({
   children,
   comment,
@@ -30,18 +41,8 @@ export default function Comment({
   const formatDateDistance = useRelativeTimeFormatter();
   const [backPage, setBackPage] = useState(0);
 
-  // Estado para el número de discusión
-  const [discussionNumber, setDiscussionNumber] = useState<number>(1);
-
-  // Al montar el componente, obtenemos el número de la discusión desde la URL
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const match = window.location.pathname.match(/discussions\/(\d+)/);
-      if (match && match[1]) {
-        setDiscussionNumber(Number(match[1]));
-      }
-    }
-  }, []);
+  // Siempre obtiene el número del post actual en cada render
+  const discussionNumber = useDiscussionNumber();
 
   const replies = comment.replies.slice(-5 - backPage * 50);
   const remainingReplies = comment.replyCount - replies.length;
