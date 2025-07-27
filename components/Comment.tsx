@@ -79,12 +79,7 @@ export default function Comment({
         {!comment.isMinimized ? (
           <div className="gsc-comment-header">
             <div className="gsc-comment-author">
-              <a
-                rel="nofollow noopener noreferrer"
-                target="_blank"
-                href={comment.author.url}
-                className="gsc-comment-author-avatar"
-              >
+              <span className="gsc-comment-author-avatar">
                 <img
                   className="mr-2 rounded-full"
                   src={comment.author.avatarUrl}
@@ -96,7 +91,7 @@ export default function Comment({
                 <span className="link-primary overflow-hidden text-ellipsis font-semibold">
                   {comment.author.login}
                 </span>
-              </a>
+              </span>
               <a
                 rel="nofollow noopener noreferrer"
                 target="_blank"
@@ -129,10 +124,6 @@ export default function Comment({
             ) : null}
           </div>
         ) : null}
-        {/*
-          The <div> element *might* have a child <button> element from
-          GitHub's markdown renderer result that allows keyboard interaction.
-        */}
         {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions, jsx-a11y/click-events-have-key-events */}
         <div
           dir={children ? dir : 'auto'}
