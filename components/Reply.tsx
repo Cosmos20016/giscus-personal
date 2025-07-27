@@ -28,7 +28,12 @@ export default function Reply({ reply, onReplyUpdate }: IReplyProps) {
       <div className="gsc-tl-line" />
       <div className={`flex ${hidden ? 'items-center' : ''}`}>
         <div className="gsc-reply-author-avatar">
-          <span className="flex items-center">
+          <a
+            rel="nofollow noopener noreferrer"
+            target="_blank"
+            href={reply.author.url}
+            className="flex items-center"
+          >
             <img
               className="rounded-full"
               src={reply.author.avatarUrl}
@@ -37,18 +42,28 @@ export default function Reply({ reply, onReplyUpdate }: IReplyProps) {
               alt={`@${reply.author.login}`}
               loading="lazy"
             />
-          </span>
+          </a>
         </div>
         <div className="w-full min-w-0 ml-2">
           {!hidden ? (
             <div className="gsc-reply-header">
               <div className="gsc-reply-author">
-                <span className="flex min-w-0 items-center">
+                <a
+                  rel="nofollow noopener noreferrer"
+                  target="_blank"
+                  href={reply.author.url}
+                  className="flex min-w-0 items-center"
+                >
                   <span className="link-primary overflow-hidden text-ellipsis font-semibold">
                     {reply.author.login}
                   </span>
-                </span>
-                <span className="link-secondary overflow-hidden text-ellipsis no-underline">
+                </a>
+                <a
+                  rel="nofollow noopener noreferrer"
+                  target="_blank"
+                  href={reply.url}
+                  className="link-secondary overflow-hidden text-ellipsis"
+                >
                   <time
                     className="whitespace-nowrap"
                     title={formatDate(reply.createdAt)}
@@ -56,7 +71,7 @@ export default function Reply({ reply, onReplyUpdate }: IReplyProps) {
                   >
                     {formatDateDistance(reply.createdAt)}
                   </time>
-                </span>
+                </a>
                 {reply.authorAssociation !== 'NONE' ? (
                   <div className="hidden text-xs leading-[18px] sm:inline-flex">
                     <span className="color-box-border-info font-medium capitalize rounded-xl border px-[7px]">
