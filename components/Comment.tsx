@@ -1,5 +1,5 @@
 import { ArrowUpIcon, KebabHorizontalIcon } from '@primer/octicons-react';
-import { ReactElement, ReactNode, useCallback, useContext, useState, useEffect } from 'react';
+import { ReactElement, ReactNode, useCallback, useContext, useState } from 'react';
 import { handleCommentClick, processCommentBody } from '../lib/adapter';
 import { IComment, IReply } from '../lib/types/adapter';
 import { Reaction, updateCommentReaction } from '../lib/reactions';
@@ -18,40 +18,6 @@ interface ICommentProps {
   onReplyUpdate?: (newReply: IReply, promise: Promise<unknown>) => void;
 }
 
-// Hook para obtener SIEMPRE el número de la discusión actual de la URL, incluso con navegación SPA
-function useDiscussionNumber() {
-  const [discussionNumber, setDiscussionNumber] = useState(() => {
-    if (typeof window !== 'undefined') {
-      const match = window.location.pathname.match(/discussions\/(\d+)/);
-      if (match && match[1]) return Number(match[1]);
-    }
-    return 1;
-  });
-
-  useEffect(() => {
-    function update() {
-      const match = window.location.pathname.match(/discussions\/(\d+)/);
-      if (match && match[1]) {
-        setDiscussionNumber(Number(match[1]));
-      }
-    }
-    window.addEventListener('popstate', update); // Navegación atrás/adelante
-    window.addEventListener('pushstate', update); // Cambios SPA (algunos routers)
-    window.addEventListener('replaceState', update); // Cambios SPA (algunos routers)
-    // Por seguridad, escucha cambios de URL (mutation observer opcional)
-    const interval = setInterval(update, 500);
-
-    return () => {
-      window.removeEventListener('popstate', update);
-      window.removeEventListener('pushstate', update);
-      window.removeEventListener('replaceState', update);
-      clearInterval(interval);
-    };
-  }, []);
-
-  return discussionNumber;
-}
-
 export default function Comment({
   children,
   comment,
@@ -64,11 +30,9 @@ export default function Comment({
   const formatDateDistance = useRelativeTimeFormatter();
   const [backPage, setBackPage] = useState(0);
 
-  // SIEMPRE actual, incluso si navegas entre /discussions/1, /discussions/2, etc.
-  const discussionNumber = useDiscussionNumber();
-
   const replies = comment.replies.slice(-5 - backPage * 50);
   const remainingReplies = comment.replyCount - replies.length;
+
   const hasNextPage = replies.length < comment.replies.length;
   const hasUnfetchedReplies = !hasNextPage && remainingReplies > 0;
 
@@ -86,11 +50,13 @@ export default function Comment({
     const upvoteCount = comment.viewerHasUpvoted
       ? comment.upvoteCount - 1
       : comment.upvoteCount + 1;
+
     const promise = toggleUpvote(
       { upvoteInput: { subjectId: comment.id } },
       token,
       comment.viewerHasUpvoted,
     );
+
     onCommentUpdate(
       {
         ...comment,
@@ -102,7 +68,6 @@ export default function Comment({
   }, [comment, onCommentUpdate, token]);
 
   const hidden = !!comment.deletedAt || comment.isMinimized;
-  const isAuthor = comment.viewerDidAuthor;
 
   return (
     <div className="gsc-comment">
@@ -143,19 +108,6 @@ export default function Comment({
                   </span>
                 </div>
               ) : null}
-              {/* Botón Editar solo para el autor */}
-              {isAuthor && (
-                <span className="ml-2">
-                  <a
-                    href={`https://github.com/Cosmos20016/Gesti-n-de-comentarios/discussions/${discussionNumber}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="color-text-link underline text-xs"
-                  >
-                    Editar
-                  </a>
-                </span>
-              )}
             </div>
             {comment.lastEditedAt ? (
               <button
@@ -194,6 +146,8 @@ export default function Comment({
                   comment.viewerHasUpvoted ? 'has-reacted' : ''
                 }`}
                 onClick={upvote}
+                // TODO: Remove `true ||` when GitHub allows upvote with app-issued user tokens
+                // https://github.com/orgs/community/discussions/3968
                 disabled={true || !token || !comment.viewerCanUpvote}
                 aria-label={token ? t('upvote') : t('youMustBeSignedInToUpvote')}
                 title={
@@ -203,6 +157,7 @@ export default function Comment({
                 }
               >
                 <ArrowUpIcon className="gsc-direct-reaction-button-emoji" />
+
                 <span
                   className="gsc-social-reaction-summary-item-count"
                   title={t('upvotes', { count: comment.upvoteCount })}
@@ -237,11 +192,13 @@ export default function Comment({
                 <div className="flex w-[29px] shrink-0 content-center mr-[9px]">
                   <KebabHorizontalIcon className="w-full rotate-90 fill-[var(--color-border-muted)]" />
                 </div>
+
                 {hasNextPage ? (
                   <button className="color-text-link underline" onClick={incrementBackPage}>
                     {t('showPreviousReplies', { count: remainingReplies })}
                   </button>
                 ) : null}
+
                 {hasUnfetchedReplies ? (
                   <a
                     href={comment.url}
@@ -254,6 +211,7 @@ export default function Comment({
                 ) : null}
               </div>
             ) : null}
+
             {onReplyUpdate
               ? replies.map((reply) => (
                   <Reply key={reply.id} reply={reply} onReplyUpdate={onReplyUpdate} />
@@ -261,6 +219,7 @@ export default function Comment({
               : null}
           </div>
         ) : null}
+
         {!comment.isMinimized && !!replyBox ? replyBox : null}
       </div>
     </div>
