@@ -79,7 +79,12 @@ export default function Comment({
         {!comment.isMinimized ? (
           <div className="gsc-comment-header">
             <div className="gsc-comment-author">
-              <span className="gsc-comment-author-avatar">
+              <a
+                rel="nofollow noopener noreferrer"
+                target="_blank"
+                href={comment.author.url}
+                className="gsc-comment-author-avatar"
+              >
                 <img
                   className="mr-2 rounded-full"
                   src={comment.author.avatarUrl}
@@ -91,8 +96,13 @@ export default function Comment({
                 <span className="link-primary overflow-hidden text-ellipsis font-semibold">
                   {comment.author.login}
                 </span>
-              </span>
-              <span className="link-secondary overflow-hidden text-ellipsis no-underline">
+              </a>
+              <a
+                rel="nofollow noopener noreferrer"
+                target="_blank"
+                href={comment.url}
+                className="link-secondary overflow-hidden text-ellipsis"
+              >
                 <time
                   className="whitespace-nowrap"
                   title={formatDate(comment.createdAt)}
@@ -100,7 +110,7 @@ export default function Comment({
                 >
                   {formatDateDistance(comment.createdAt)}
                 </time>
-              </span>
+              </a>
               {comment.authorAssociation !== 'NONE' ? (
                 <div className="hidden text-xs leading-[18px] sm:inline-flex">
                   <span className="color-box-border-info font-medium capitalize ml-1 rounded-xl border px-[7px]">
@@ -119,6 +129,10 @@ export default function Comment({
             ) : null}
           </div>
         ) : null}
+        {/*
+          The <div> element *might* have a child <button> element from
+          GitHub's markdown renderer result that allows keyboard interaction.
+        */}
         {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions, jsx-a11y/click-events-have-key-events */}
         <div
           dir={children ? dir : 'auto'}
