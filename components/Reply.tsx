@@ -28,12 +28,7 @@ export default function Reply({ reply, onReplyUpdate }: IReplyProps) {
       <div className="gsc-tl-line" />
       <div className={`flex ${hidden ? 'items-center' : ''}`}>
         <div className="gsc-reply-author-avatar">
-          <a
-            rel="nofollow noopener noreferrer"
-            target="_blank"
-            href={reply.author.url}
-            className="flex items-center"
-          >
+          <span className="flex items-center">
             <img
               className="rounded-full"
               src={reply.author.avatarUrl}
@@ -42,22 +37,17 @@ export default function Reply({ reply, onReplyUpdate }: IReplyProps) {
               alt={`@${reply.author.login}`}
               loading="lazy"
             />
-          </a>
+          </span>
         </div>
         <div className="w-full min-w-0 ml-2">
           {!hidden ? (
             <div className="gsc-reply-header">
               <div className="gsc-reply-author">
-                <a
-                  rel="nofollow noopener noreferrer"
-                  target="_blank"
-                  href={reply.author.url}
-                  className="flex min-w-0 items-center"
-                >
+                <span className="flex min-w-0 items-center">
                   <span className="link-primary overflow-hidden text-ellipsis font-semibold">
                     {reply.author.login}
                   </span>
-                </a>
+                </span>
                 <a
                   rel="nofollow noopener noreferrer"
                   target="_blank"
@@ -90,10 +80,6 @@ export default function Reply({ reply, onReplyUpdate }: IReplyProps) {
               ) : null}
             </div>
           ) : null}
-          {/*
-            The <div> element *might* have a child <button> element from
-            GitHub's markdown renderer result that allows keyboard interaction.
-          */}
           {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions, jsx-a11y/click-events-have-key-events */}
           <div
             dir="auto"
