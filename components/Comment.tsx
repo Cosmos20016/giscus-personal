@@ -199,7 +199,7 @@ export default function Comment({
                 </div>
 
                 {hasNextPage ? (
-                  <button className="color-text-link underline" onClick={incrementBackPage}>
+                  <button className="color-text-link" onClick={incrementBackPage}>
                     {t('showPreviousReplies', { count: remainingReplies })}
                   </button>
                 ) : null}
