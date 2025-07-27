@@ -154,7 +154,7 @@ export default function Giscus({ onDiscussionCreateRequest, onError }: IGiscusPr
                   components={{
                     a: (
                       <a
-                        href="https://kevinborja.com/"
+                        href="https://giscus.app"
                         target="_blank"
                         rel="noreferrer noopener nofollow"
                         className="link-secondary"
