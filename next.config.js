@@ -39,7 +39,7 @@ const securityHeaders = [
   },
   {
     key: 'Content-Security-Policy',
-    value: `frame-ancestors 'self';`,
+    value: `frame-ancestors 'self' https://kevinborja.com https://www.kevinborja.com;`,
   },
 ];
 
@@ -59,7 +59,7 @@ const config = withBundleAnalyzer(
             headers: [
               {
                 key: 'X-Frame-Options',
-                value: 'SAMEORIGIN',
+                value: 'ALLOW-FROM https://kevinborja.com',
               },
             ],
           },
