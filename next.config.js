@@ -55,15 +55,6 @@ const config = withBundleAnalyzer(
             headers: securityHeaders,
           },
           {
-            source: '/',
-            headers: [
-              {
-                key: 'X-Frame-Options',
-                value: 'ALLOW-FROM https://kevinborja.com',
-              },
-            ],
-          },
-          {
             source: '/(themes/(?:.*)|client\\.js)',
             headers: [
               {
