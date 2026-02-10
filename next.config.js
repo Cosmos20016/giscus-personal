@@ -39,7 +39,7 @@ const securityHeaders = [
   },
   {
     key: 'Content-Security-Policy',
-    value: `frame-ancestors 'self';`,
+    value: `frame-ancestors 'self' https://kevinborja.com https://www.kevinborja.com;`,
   },
 ];
 
@@ -53,15 +53,6 @@ const config = withBundleAnalyzer(
           {
             source: '/(.*)',
             headers: securityHeaders,
-          },
-          {
-            source: '/',
-            headers: [
-              {
-                key: 'X-Frame-Options',
-                value: 'SAMEORIGIN',
-              },
-            ],
           },
           {
             source: '/(themes/(?:.*)|client\\.js)',
