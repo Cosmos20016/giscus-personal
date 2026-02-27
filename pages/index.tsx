@@ -41,7 +41,7 @@ export async function getStaticProps({ locale }: GetStaticPropsContext) {
     author: {
       avatarUrl: 'https://avatars.githubusercontent.com/in/106117',
       login: 'KB',
-      url: 'https://github.com/apps/comentarios-miweb',
+      url: 'https://github.com/apps/Kevinborja.com',
     },
     authorAssociation: 'APP',
     bodyHTML: contentBefore,
