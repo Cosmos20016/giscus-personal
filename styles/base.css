@@ -428,7 +428,7 @@ details summary {
 
 .ClipboardButton:focus,
 .snippet-clipboard-content:hover .ClipboardButton,
-.highlight:hover .ClipboardButton, {
+.highlight:hover .ClipboardButton {
   @apply opacity-100;
 
   animation: fade-in 0.2s both;
@@ -540,17 +540,22 @@ img.emoji {
   @apply flex flex-col gap-6;
 }
 
+/* 1. Encabezado y contador de comentarios centrado */
 .gsc-header {
-  @apply flex items-center flex-auto gap-2;
+  @apply flex items-center justify-center flex-auto gap-2 text-center;
+  justify-content: center;
+  text-align: center;
 }
 
 .gsc-left-header {
-  @apply flex flex-wrap items-center flex-auto whitespace-nowrap gap-2;
+  @apply flex flex-wrap items-center justify-center flex-auto whitespace-nowrap gap-2 text-center;
+  justify-content: center;
+  text-align: center;
 }
 
 .gsc-comments-count,
 .gsc-comments-count-separator {
-  @apply font-semibold;
+  @apply font-semibold text-center;
 }
 
 .gsc-pagination {
@@ -575,12 +580,22 @@ img.emoji {
   @apply flex items-center min-w-0;
 }
 
+/* 2. Cuerpo del texto de los comentarios centrado */
 .gsc-comment-content {
-  @apply p-4 rounded-t;
+  @apply p-4 rounded-t text-center;
+  text-align: center;
+}
+
+.gsc-comment-content p,
+.gsc-comment-content blockquote,
+.gsc-comment-content ul,
+.gsc-comment-content ol {
+  text-align: center;
 }
 
 .gsc-comment-content.minimized {
-  @apply px-4 py-2 border-b;
+  @apply px-4 py-2 border-b text-center;
+  text-align: center;
 }
 
 .gsc-comment-footer, .gsc-reply-footer {
@@ -599,8 +614,9 @@ img.emoji {
   @apply pt-2 border-t rounded-b-md;
 }
 
+/* 3. Caja de redacción y respuestas (Composer) centrada */
 .gsc-comment-box {
-  @apply w-full text-sm;
+  @apply w-full text-sm mx-auto;
 }
 
 .gsc-comment-box:not(.gsc-comment-box-is-reply) {
@@ -608,11 +624,13 @@ img.emoji {
 }
 
 .gsc-comment-box-tabs {
-  @apply flex items-center justify-between border-b rounded-t;
+  @apply flex items-center justify-center border-b rounded-t;
+  justify-content: center;
 }
 
 .gsc-comment .gsc-comment-box-tabs {
-  @apply border-t rounded-none;
+  @apply border-t rounded-none justify-center;
+  justify-content: center;
 }
 
 .gsc-comment-box-md-toolbar {
@@ -635,7 +653,8 @@ img.emoji {
 }
 
 .gsc-comment-box-preview {
-  @apply px-2 pt-2 pb-4 min-h-[131px] border-b-2;
+  @apply px-2 pt-2 pb-4 min-h-[131px] border-b-2 text-center;
+  text-align: center;
 }
 
 .gsc-comment-box-write {
@@ -649,11 +668,12 @@ img.emoji {
 }
 
 .gsc-comment-box-textarea {
-  @apply w-full p-2 border rounded min-h-[100px] max-h-[500px] disabled:cursor-not-allowed;
+  @apply w-full p-2 border rounded min-h-[100px] max-h-[500px] disabled:cursor-not-allowed text-center;
 
   border-bottom-style: dashed;
   border-bottom-left-radius: 0;
   border-bottom-right-radius: 0;
+  text-align: center;
 }
 
 .gsc-comment-box-textarea:focus {
@@ -663,23 +683,27 @@ img.emoji {
 }
 
 .gsc-comment-box-textarea-extras {
-  @apply flex justify-end px-2.5 py-[7px] border border-t-0 rounded-b;
+  @apply flex justify-center px-2.5 py-[7px] border border-t-0 rounded-b;
+  justify-content: center;
 }
 
 .gsc-comment-box-bottom {
-  @apply flex items-center m-2;
+  @apply flex items-center justify-center m-2 gap-4 flex-wrap;
+  justify-content: center;
 }
 
 .gsc-comment-box-markdown-hint {
-  @apply text-xs hover:no-underline;
+  @apply text-xs hover:no-underline text-center;
 }
 
 .gsc-comment-box-buttons {
-  @apply inline-flex shrink-0 ml-auto;
+  @apply inline-flex shrink-0;
+  margin-left: 0;
 }
 
 .gsc-reply-box {
-  @apply flex px-4 py-2 border-t rounded-b-md;
+  @apply flex justify-center px-4 py-2 border-t rounded-b-md;
+  justify-content: center;
 }
 
 .gsc-social-reaction-summary-item {
@@ -873,7 +897,12 @@ img.emoji {
 }
 
 .gsc-reply-content {
-  @apply w-full pb-2;
+  @apply w-full pb-2 text-center;
+  text-align: center;
+}
+
+.gsc-reply-content p {
+  text-align: center;
 }
 
 .gsc-reply-content.markdown pre,
