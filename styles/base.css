@@ -580,7 +580,7 @@ img.emoji {
   @apply flex items-center min-w-0;
 }
 
-/* 2. Cuerpo del texto de los comentarios centrado e imágenes centradas */
+/* 2. Cuerpo del texto centrado e imágenes/GIFs no interactivos */
 .gsc-comment-content {
   @apply p-4 rounded-t text-center;
   text-align: center;
@@ -595,6 +595,7 @@ img.emoji {
   margin-right: auto;
 }
 
+/* Imágenes y GIFs centrados e inhabilitados para clics o arrastres */
 .gsc-comment-content img:not(.emoji),
 .gsc-reply-content img:not(.emoji),
 .gsc-comment-box-preview img:not(.emoji) {
@@ -602,6 +603,17 @@ img.emoji {
   margin-left: auto !important;
   margin-right: auto !important;
   max-width: 100%;
+  pointer-events: none !important;
+  user-select: none !important;
+  -webkit-user-drag: none !important;
+  cursor: default !important;
+}
+
+/* Neutraliza enlaces que envuelvan imágenes o GIFs */
+.gsc-comment-content a:has(> img:not(.emoji)),
+.gsc-reply-content a:has(> img:not(.emoji)) {
+  pointer-events: none !important;
+  cursor: default !important;
 }
 
 .gsc-comment-content table,
