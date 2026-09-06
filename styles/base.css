@@ -8,8 +8,10 @@
  * ============================================================ */
 
 @tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-@keyframes fade-in  {
+@keyframes fade-in {
   from { opacity: 0; }
   to   { opacity: 1; }
 }
