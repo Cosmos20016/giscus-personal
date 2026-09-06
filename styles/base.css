@@ -148,7 +148,6 @@ details summary {
 @supports (-webkit-touch-callout: none) {
   .form-control,
   .form-select {
-    /* Ensures inputs don't zoom on mobile iPhone but are normal on iPad */
     @apply text-base md:text-sm;
   }
 }
@@ -265,8 +264,6 @@ details summary {
   @apply fill-current inline-block overflow-visible align-text-bottom;
 }
 
-/*! Compatibility shim for @primer/css to style GitHub-generated HTML */
-
 .border-0 {
   @apply border-none;
 }
@@ -368,7 +365,6 @@ details summary {
 }
 
 .blob-num {
-  /* stylelint-disable-next-line max-line-length */
   @apply w-[1%] min-w-[50px] px-[10px] text-xs leading-5 text-right whitespace-nowrap align-top cursor-pointer select-none;
 
   color: var(--color-fg-subtle, var(--color-diff-blob-num-text));
@@ -522,6 +518,9 @@ img.emoji {
 
 .gsc-comment {
   @apply flex text-sm;
+  content-visibility: auto;
+  contain-intrinsic-size: 0 140px;
+  contain: layout style;
 }
 
 .gsc-main {
@@ -543,14 +542,10 @@ img.emoji {
 /* 1. Encabezado y contador de comentarios centrado */
 .gsc-header {
   @apply flex items-center justify-center flex-auto gap-2 text-center;
-  justify-content: center;
-  text-align: center;
 }
 
 .gsc-left-header {
   @apply flex flex-wrap items-center justify-center flex-auto whitespace-nowrap gap-2 text-center;
-  justify-content: center;
-  text-align: center;
 }
 
 .gsc-comments-count,
@@ -583,7 +578,8 @@ img.emoji {
 /* 2. Cuerpo del texto centrado e imágenes/GIFs no interactivos */
 .gsc-comment-content {
   @apply p-4 rounded-t text-center;
-  text-align: center;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .gsc-comment-content p,
@@ -591,8 +587,7 @@ img.emoji {
 .gsc-comment-content ul,
 .gsc-comment-content ol {
   text-align: center;
-  margin-left: auto;
-  margin-right: auto;
+  margin-inline: auto;
 }
 
 /* Imágenes y GIFs centrados e inhabilitados para clics o arrastres */
@@ -600,9 +595,9 @@ img.emoji {
 .gsc-reply-content img:not(.emoji),
 .gsc-comment-box-preview img:not(.emoji) {
   display: block !important;
-  margin-left: auto !important;
-  margin-right: auto !important;
+  margin-inline: auto !important;
   max-width: 100%;
+  height: auto;
   pointer-events: none !important;
   user-select: none !important;
   -webkit-user-drag: none !important;
@@ -619,22 +614,21 @@ img.emoji {
 .gsc-comment-content table,
 .gsc-reply-content table,
 .gsc-comment-box-preview table {
-  margin-left: auto !important;
-  margin-right: auto !important;
+  margin-inline: auto !important;
   text-align: center;
 }
 
 .gsc-comment-content pre,
 .gsc-reply-content pre,
 .gsc-comment-box-preview pre {
-  margin-left: auto !important;
-  margin-right: auto !important;
+  margin-inline: auto !important;
   text-align: center;
+  max-width: 100%;
+  overflow-x: auto;
 }
 
 .gsc-comment-content.minimized {
   @apply px-4 py-2 border-b text-center;
-  text-align: center;
 }
 
 .gsc-comment-footer, .gsc-reply-footer {
@@ -664,12 +658,10 @@ img.emoji {
 
 .gsc-comment-box-tabs {
   @apply flex items-center justify-center border-b rounded-t;
-  justify-content: center;
 }
 
 .gsc-comment .gsc-comment-box-tabs {
   @apply border-t rounded-none justify-center;
-  justify-content: center;
 }
 
 .gsc-comment-box-md-toolbar {
@@ -693,7 +685,8 @@ img.emoji {
 
 .gsc-comment-box-preview {
   @apply px-2 pt-2 pb-4 min-h-[131px] border-b-2 text-center;
-  text-align: center;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .gsc-comment-box-preview p,
@@ -701,8 +694,7 @@ img.emoji {
 .gsc-comment-box-preview ul,
 .gsc-comment-box-preview ol {
   text-align: center;
-  margin-left: auto;
-  margin-right: auto;
+  margin-inline: auto;
 }
 
 .gsc-comment-box-write {
@@ -721,7 +713,6 @@ img.emoji {
   border-bottom-style: dashed;
   border-bottom-left-radius: 0;
   border-bottom-right-radius: 0;
-  text-align: center;
 }
 
 .gsc-comment-box-textarea:focus {
@@ -732,12 +723,10 @@ img.emoji {
 
 .gsc-comment-box-textarea-extras {
   @apply flex justify-center px-2.5 py-[7px] border border-t-0 rounded-b;
-  justify-content: center;
 }
 
 .gsc-comment-box-bottom {
   @apply flex items-center justify-center m-2 gap-4 flex-wrap;
-  justify-content: center;
 }
 
 .gsc-comment-box-markdown-hint {
@@ -751,7 +740,6 @@ img.emoji {
 
 .gsc-reply-box {
   @apply flex justify-center px-4 py-2 border-t rounded-b-md;
-  justify-content: center;
 }
 
 .gsc-social-reaction-summary-item {
@@ -796,10 +784,6 @@ img.emoji {
   @apply font-medium;
 }
 
-/*
-  TODO: Remove when GitHub allows upvote with app-issued user tokens
-  https://github.com/orgs/community/discussions/3968
-  */
 .gsc-upvote-button:disabled {
   @apply border-none bg-transparent cursor-auto p-0;
 }
@@ -888,7 +872,6 @@ img.emoji {
 }
 
 .gsc-reactions-popover {
-  /* stylelint-disable-next-line max-line-length */
   @apply ease-in-out duration-100 origin-center transform transition z-20 border rounded mt-[2px] absolute invisible scale-50 w-[146px];
 }
 
@@ -930,6 +913,8 @@ img.emoji {
 
 .gsc-reply {
   @apply relative p-4 pb-2;
+  content-visibility: auto;
+  contain-intrinsic-size: 0 100px;
 }
 
 .gsc-reply-author-avatar {
@@ -946,7 +931,8 @@ img.emoji {
 
 .gsc-reply-content {
   @apply w-full pb-2 text-center;
-  text-align: center;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .gsc-reply-content p,
@@ -954,8 +940,7 @@ img.emoji {
 .gsc-reply-content ul,
 .gsc-reply-content ol {
   text-align: center;
-  margin-left: auto;
-  margin-right: auto;
+  margin-inline: auto;
 }
 
 .gsc-reply-content.markdown pre,
@@ -974,8 +959,6 @@ img.emoji {
 .gsc-reply-reactions {
   @apply flex content-center mr-4 gap-2 -ml-1;
 }
-
-/* Re-apply overridden tailwind */
 
 .inline-flex {
   display: inline-flex;
