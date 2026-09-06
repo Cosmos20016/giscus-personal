@@ -580,7 +580,7 @@ img.emoji {
   @apply flex items-center min-w-0;
 }
 
-/* 2. Cuerpo del texto de los comentarios centrado */
+/* 2. Cuerpo del texto de los comentarios centrado e imágenes centradas */
 .gsc-comment-content {
   @apply p-4 rounded-t text-center;
   text-align: center;
@@ -590,6 +590,33 @@ img.emoji {
 .gsc-comment-content blockquote,
 .gsc-comment-content ul,
 .gsc-comment-content ol {
+  text-align: center;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.gsc-comment-content img:not(.emoji),
+.gsc-reply-content img:not(.emoji),
+.gsc-comment-box-preview img:not(.emoji) {
+  display: block !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  max-width: 100%;
+}
+
+.gsc-comment-content table,
+.gsc-reply-content table,
+.gsc-comment-box-preview table {
+  margin-left: auto !important;
+  margin-right: auto !important;
+  text-align: center;
+}
+
+.gsc-comment-content pre,
+.gsc-reply-content pre,
+.gsc-comment-box-preview pre {
+  margin-left: auto !important;
+  margin-right: auto !important;
   text-align: center;
 }
 
@@ -655,6 +682,15 @@ img.emoji {
 .gsc-comment-box-preview {
   @apply px-2 pt-2 pb-4 min-h-[131px] border-b-2 text-center;
   text-align: center;
+}
+
+.gsc-comment-box-preview p,
+.gsc-comment-box-preview blockquote,
+.gsc-comment-box-preview ul,
+.gsc-comment-box-preview ol {
+  text-align: center;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .gsc-comment-box-write {
@@ -901,8 +937,13 @@ img.emoji {
   text-align: center;
 }
 
-.gsc-reply-content p {
+.gsc-reply-content p,
+.gsc-reply-content blockquote,
+.gsc-reply-content ul,
+.gsc-reply-content ol {
   text-align: center;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .gsc-reply-content.markdown pre,
