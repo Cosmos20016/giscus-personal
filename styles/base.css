@@ -523,8 +523,11 @@ img.emoji {
   contain: layout style;
 }
 
+/* 1. Tarjeta contenedora centrada con ancho controlado (Estándar Big Tech) */
 .gsc-main {
   @apply w-full flex flex-col gap-8;
+  max-width: 52rem;
+  margin-inline: auto;
 }
 
 .gsc-reactions {
@@ -539,7 +542,7 @@ img.emoji {
   @apply flex flex-col gap-6;
 }
 
-/* 1. Encabezado y contador de comentarios centrado */
+/* 2. Títulos, metadatos y controles simétricamente centrados */
 .gsc-header {
   @apply flex items-center justify-center flex-auto gap-2 text-center;
 }
@@ -575,9 +578,10 @@ img.emoji {
   @apply flex items-center min-w-0;
 }
 
-/* 2. Cuerpo del texto centrado e imágenes/GIFs no interactivos */
+/* 3. Cuerpo del texto alineado a la izquierda (start) con margen derecho irregular */
 .gsc-comment-content {
-  @apply p-4 rounded-t text-center;
+  @apply p-4 rounded-t;
+  text-align: start;
   overflow-wrap: anywhere;
   word-break: break-word;
 }
@@ -586,8 +590,7 @@ img.emoji {
 .gsc-comment-content blockquote,
 .gsc-comment-content ul,
 .gsc-comment-content ol {
-  text-align: center;
-  margin-inline: auto;
+  text-align: start;
 }
 
 /* Imágenes y GIFs centrados e inhabilitados para clics o arrastres */
@@ -615,20 +618,20 @@ img.emoji {
 .gsc-reply-content table,
 .gsc-comment-box-preview table {
   margin-inline: auto !important;
-  text-align: center;
+  text-align: start;
 }
 
 .gsc-comment-content pre,
 .gsc-reply-content pre,
 .gsc-comment-box-preview pre {
-  margin-inline: auto !important;
-  text-align: center;
+  text-align: start;
   max-width: 100%;
   overflow-x: auto;
 }
 
 .gsc-comment-content.minimized {
-  @apply px-4 py-2 border-b text-center;
+  @apply px-4 py-2 border-b;
+  text-align: start;
 }
 
 .gsc-comment-footer, .gsc-reply-footer {
@@ -647,7 +650,7 @@ img.emoji {
   @apply pt-2 border-t rounded-b-md;
 }
 
-/* 3. Caja de redacción y respuestas (Composer) centrada */
+/* 4. Caja de redacción centrada en layout, entrada de texto alineada a la izquierda */
 .gsc-comment-box {
   @apply w-full text-sm mx-auto;
 }
@@ -684,7 +687,8 @@ img.emoji {
 }
 
 .gsc-comment-box-preview {
-  @apply px-2 pt-2 pb-4 min-h-[131px] border-b-2 text-center;
+  @apply px-2 pt-2 pb-4 min-h-[131px] border-b-2;
+  text-align: start;
   overflow-wrap: anywhere;
   word-break: break-word;
 }
@@ -693,8 +697,7 @@ img.emoji {
 .gsc-comment-box-preview blockquote,
 .gsc-comment-box-preview ul,
 .gsc-comment-box-preview ol {
-  text-align: center;
-  margin-inline: auto;
+  text-align: start;
 }
 
 .gsc-comment-box-write {
@@ -708,8 +711,8 @@ img.emoji {
 }
 
 .gsc-comment-box-textarea {
-  @apply w-full p-2 border rounded min-h-[100px] max-h-[500px] disabled:cursor-not-allowed text-center;
-
+  @apply w-full p-2 border rounded min-h-[100px] max-h-[500px] disabled:cursor-not-allowed;
+  text-align: start;
   border-bottom-style: dashed;
   border-bottom-left-radius: 0;
   border-bottom-right-radius: 0;
@@ -784,6 +787,10 @@ img.emoji {
   @apply font-medium;
 }
 
+/*
+  TODO: Remove when GitHub allows upvote with app-issued user tokens
+  https://github.com/orgs/community/discussions/3968
+  */
 .gsc-upvote-button:disabled {
   @apply border-none bg-transparent cursor-auto p-0;
 }
@@ -930,7 +937,8 @@ img.emoji {
 }
 
 .gsc-reply-content {
-  @apply w-full pb-2 text-center;
+  @apply w-full pb-2;
+  text-align: start;
   overflow-wrap: anywhere;
   word-break: break-word;
 }
@@ -939,8 +947,7 @@ img.emoji {
 .gsc-reply-content blockquote,
 .gsc-reply-content ul,
 .gsc-reply-content ol {
-  text-align: center;
-  margin-inline: auto;
+  text-align: start;
 }
 
 .gsc-reply-content.markdown pre,
